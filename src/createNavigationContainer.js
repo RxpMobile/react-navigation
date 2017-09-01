@@ -5,6 +5,7 @@ import invariant from './utils/invariant';
 import { BackHandler, Linking } from './PlatformHelpers';
 import NavigationActions from './NavigationActions';
 import addNavigationHelpers from './addNavigationHelpers';
+import {Platform,DeviceEventEmitter} from 'react-native';
 
 import type {
   NavigationRoute,
@@ -150,10 +151,24 @@ export default function createNavigationContainer<S: *, O>(
       if (!this._isStateful()) {
         return;
       }
+      if (Platform.OS === 'ios')
+      {
+        const function = () =>
+          this.dispatch(NavigationActions.back())
+        );
+        this.subs = () => {
+          DeviceEventEmitter.addListener('hardwareBackPress', function);
+          return {
+            remove: () => DeviceEventEmitter.removeEventListener('hardwareBackPress', function)
+          };
+        }
+      }
+      else {
+        this.subs = BackHandler.addEventListener('hardwareBackPress', () =>
+          this.dispatch(NavigationActions.back())
+        );
+      }
 
-      this.subs = BackHandler.addEventListener('hardwareBackPress', () =>
-        this.dispatch(NavigationActions.back())
-      );
 
       Linking.addEventListener('url', ({ url }: { url: string }) => {
         this._handleOpenURL(url);
