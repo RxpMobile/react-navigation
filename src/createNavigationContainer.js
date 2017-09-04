@@ -153,13 +153,13 @@ export default function createNavigationContainer<S: *, O>(
       }
       if (Platform.OS === 'ios')
       {
-        const function = () =>
+        const fonction = () =>
           this.dispatch(NavigationActions.back())
         );
         this.subs = () => {
-          DeviceEventEmitter.addListener('hardwareBackPress', function);
+          DeviceEventEmitter.addListener('hardwareBackPress', fonction);
           return {
-            remove: () => DeviceEventEmitter.removeEventListener('hardwareBackPress', function)
+            remove: () => DeviceEventEmitter.removeEventListener('hardwareBackPress', fonction)
           };
         }
       }
