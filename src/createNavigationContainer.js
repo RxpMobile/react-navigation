@@ -153,9 +153,9 @@ export default function createNavigationContainer<S: *, O>(
       }
       if (Platform.OS === 'ios')
       {
-        const fonction = () =>
-          this.dispatch(NavigationActions.back())
-        );
+        const fonction = function(){
+          this.dispatch(NavigationActions.back());
+        };
         this.subs = () => {
           DeviceEventEmitter.addListener('hardwareBackPress', fonction);
           return {
