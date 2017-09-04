@@ -154,7 +154,9 @@ export default function createNavigationContainer<S: *, O>(
       if (Platform.OS === 'ios')
       {
         const fonction = ()=>{
-          this.dispatch(NavigationActions.back());
+          if (!this.dispatch(NavigationActions.back())){
+            NativeModules.broadcastModule.sendBroadcast("closeModule",JSON.stringify({}));
+          }
         };
         const emitter = new NativeEventEmitter(NativeModules.broadcastModule);
         this.subs =emitter.addListener('hardwareBackPress', fonction);
