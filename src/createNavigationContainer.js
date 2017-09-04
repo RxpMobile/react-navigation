@@ -5,7 +5,7 @@ import invariant from './utils/invariant';
 import { BackHandler, Linking } from './PlatformHelpers';
 import NavigationActions from './NavigationActions';
 import addNavigationHelpers from './addNavigationHelpers';
-import {Platform,DeviceEventEmitter} from 'react-native';
+import {Platform,NativeModules,NativeEventEmitter} from 'react-native';
 
 import type {
   NavigationRoute,
@@ -153,15 +153,11 @@ export default function createNavigationContainer<S: *, O>(
       }
       if (Platform.OS === 'ios')
       {
-        const fonction = function(){
+        const fonction = ()=>{
           this.dispatch(NavigationActions.back());
         };
-        this.subs = () => {
-          DeviceEventEmitter.addListener('hardwareBackPress', fonction);
-          return {
-            remove: () => DeviceEventEmitter.removeEventListener('hardwareBackPress', fonction)
-          };
-        }
+        const emitter = new NativeEventEmitter(NativeModules.broadcastModule);
+        this.subs =emitter.addListener('hardwareBackPress', fonction);
       }
       else {
         this.subs = BackHandler.addEventListener('hardwareBackPress', () =>
